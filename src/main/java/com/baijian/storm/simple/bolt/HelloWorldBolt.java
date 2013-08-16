@@ -15,7 +15,7 @@ import java.io.IOException;
 /**
  * Author: bj
  * Time: 2013-08-13 1:34 PM
- * Desc:
+ * Desc: Just append World word to the end
  */
 public class HelloWorldBolt extends BaseBasicBolt {
 
@@ -35,6 +35,7 @@ public class HelloWorldBolt extends BaseBasicBolt {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println("=====after write file=====");
         collector.emit(new Values(msg + " World"));
     }
 
