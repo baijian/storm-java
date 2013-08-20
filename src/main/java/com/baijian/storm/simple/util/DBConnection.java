@@ -2,7 +2,6 @@ package com.baijian.storm.simple.util;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
-import javax.activation.DataSource;
 import java.sql.Connection;
 import java.util.ResourceBundle;
 

@@ -33,6 +33,13 @@ public class MysqlPersistenceBolt extends BaseRichBolt {
 
     @Override
     public void execute(Tuple tuple) {
+        String log = tuple.getString(0);
+        //TO DO mysql事务提交
+        try {
+            persistence(log);
+        } catch (Exception e) {
+        }
+        _collector.ack(tuple);
     }
 
     @Override
@@ -40,7 +47,7 @@ public class MysqlPersistenceBolt extends BaseRichBolt {
         declarer.declare(_scheme.getOutputFields());
     }
 
-    private void persistence() throws Exception {
+    private void persistence(String log) throws Exception {
         Connection connection = DBConnection.getConnection();
         String sql = "insert into";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);

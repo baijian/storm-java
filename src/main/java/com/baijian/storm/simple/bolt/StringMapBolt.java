@@ -37,4 +37,9 @@ public class StringMapBolt extends BaseRichBolt {
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
         declarer.declare(new Fields("string"));
     }
+
+    @Override
+    public void cleanup() {
+
+    }
 }

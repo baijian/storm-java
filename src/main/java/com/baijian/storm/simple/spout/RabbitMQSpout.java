@@ -41,11 +41,11 @@ public class RabbitMQSpout extends BaseRichSpout {
     private final boolean _requeueOnFail;
     private final Scheme _scheme;
 
-    private boolean _spoutActive = true;
-    private Connection _amqpConnection;
-    private Channel _amqpChannel;
-    private QueueingConsumer _amqpConsumer;
-    private String _amqpConsumerTag;
+    private transient boolean _spoutActive = true;
+    private transient Connection _amqpConnection;
+    private transient Channel _amqpChannel;
+    private transient QueueingConsumer _amqpConsumer;
+    private transient String _amqpConsumerTag;
 
     private SpoutOutputCollector _collector;
 
