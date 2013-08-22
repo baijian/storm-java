@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * Author: bj
  * Time: 2013-08-21 3:03 PM
- * Desc: Save count of each url to mysql
+ * Desc: Save count of each registered url to mysql.
  */
 public class CountBolt extends BaseRichBolt {
 
@@ -26,7 +26,7 @@ public class CountBolt extends BaseRichBolt {
     private Map<Integer, Integer> _counter;
     private Map<Integer, String> _timer;
 
-    public void CountBolt() {
+    public CountBolt() {
         _counter = new HashMap<Integer, Integer>();
         _timer = new HashMap<Integer, String>();
     }
@@ -40,6 +40,7 @@ public class CountBolt extends BaseRichBolt {
     public void execute(Tuple input) {
         int url_id = input.getInteger(0);
         String time_str = input.getString(1);
+//        System.out.println("=======" + url_id +"========"+time_str+"==============");
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date dt = null;
         try {
@@ -49,6 +50,7 @@ public class CountBolt extends BaseRichBolt {
         SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String miniute_begin = simpleDateFormat1.format(dt);
         String miniute_begin_ = miniute_begin + ":00";
+//        System.out.println(miniute_begin_+ "============------------");
         if (!_timer.containsKey(url_id)) {
             _timer.put(url_id, miniute_begin_);
         }
@@ -63,8 +65,11 @@ public class CountBolt extends BaseRichBolt {
             count++;
             _counter.remove(url_id);
             _counter.put(url_id, count);
+        } else {
+            _counter.put(url_id, 0);
         }
         if (dt_begin.getTime() - dt.getTime() > 60000) {
+//        if (url_id == 3 && _counter.get(url_id) > 0) {
             recordCount(url_id, _timer.get(url_id), _counter.get(url_id));
             _timer.remove(url_id);
             _counter.remove(url_id);

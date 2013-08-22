@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 /**
  * Author: bj
  * Time: 2013-08-21 3:02 PM
- * Desc: Filter url which are registered in mysql and synchronous every 3 miniute.
+ * Desc: Filter url which are registered in mysql and synchronous urls every 3 miniute.
  */
 public class FilterUriBolt extends BaseRichBolt {
 
@@ -66,7 +66,8 @@ public class FilterUriBolt extends BaseRichBolt {
         while(it.hasNext()) {
             Map.Entry<Integer, String> u = (Map.Entry)it.next();
             if (Pattern.matches(u.getValue(), uri)) {
-                _collector.emit(new Values(u.getKey(), time_local));
+//                System.out.println("=========" +  t_str + "=======");
+                _collector.emit(new Values(u.getKey(), t_str));
                 break;
             }
         }

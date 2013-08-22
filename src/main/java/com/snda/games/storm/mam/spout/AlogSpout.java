@@ -17,12 +17,13 @@ import com.rabbitmq.client.QueueingConsumer;
 
 import org.apache.log4j.Logger;
 
-import java.util.List;import java.util.Map;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Author: bj
  * Time: 2013-08-21 2:52 PM
- * Desc: Read alog from RabbitMQ.
+ * Desc: Read nginx alog from RabbitMQ.
  */
 public class AlogSpout extends BaseRichSpout {
 
@@ -33,7 +34,7 @@ public class AlogSpout extends BaseRichSpout {
     public static final long WAIT_FOR_NEXT_MESSAGE = 1L;
     public static final long WAIT_AFTER_SHUTDOWN_SIGNAL = 10000L;
     public static String ERROR_STREAM_NAME = "error-stream";
-    private final String QUEUE_NAME = "rabbit";
+    private final String QUEUE_NAME = "rabbit-alog";
 
     private int _prefetchCount;
     private final String _amqpHost;
@@ -93,7 +94,8 @@ public class AlogSpout extends BaseRichSpout {
                 final byte[] message = delivery.getBody();
                 List<Object> msg = _scheme.deserialize(message);
                 if (msg != null && msg.size() > 0) {
-                    _collector.emit(msg, deliveryTag);
+//                    _collector.emit(msg, deliveryTag);
+                    _collector.emit(msg);
                 } else {
                     handleBadMsg(deliveryTag, message);
                 }
@@ -171,9 +173,9 @@ public class AlogSpout extends BaseRichSpout {
         _amqpConnection = connectionFactory.newConnection();
         _amqpChannel = _amqpConnection.createChannel();
         _amqpChannel.basicQos(prefetchCount);
-        _amqpChannel.queueDelete(QUEUE_NAME);
+        _amqpChannel.queueDeclare(QUEUE_NAME, false, false, false, null);
         _amqpConsumer = new QueueingConsumer(_amqpChannel);
-        _amqpConsumerTag = _amqpChannel.basicConsume(QUEUE_NAME, false, _amqpConsumer);
+        _amqpConsumerTag = _amqpChannel.basicConsume(QUEUE_NAME, true, _amqpConsumer);
     }
 
     private void reconnect() {
