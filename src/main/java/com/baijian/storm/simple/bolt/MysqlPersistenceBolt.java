@@ -9,7 +9,8 @@ import backtype.storm.tuple.Tuple;
 import com.baijian.storm.simple.util.DBConnection;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -21,6 +22,8 @@ public class MysqlPersistenceBolt extends BaseRichBolt {
 
     private OutputCollector _collector;
     private final Scheme _scheme;
+    private int _counter;
+    private Map<Integer, Tuple> _data = new HashMap<Integer, Tuple>();
 
     public MysqlPersistenceBolt(Scheme scheme) {
         _scheme = scheme;
@@ -33,13 +36,14 @@ public class MysqlPersistenceBolt extends BaseRichBolt {
 
     @Override
     public void execute(Tuple tuple) {
-        String log = tuple.getString(0);
-        //TO DO mysql事务提交
-        try {
-            persistence(log);
-        } catch (Exception e) {
+        _counter++;
+        _data.put(_counter, tuple);
+        if(_counter > 9) {
+            try {
+                persistence();
+            } catch (Exception e) {
+            }
         }
-        _collector.ack(tuple);
     }
 
     @Override
@@ -47,13 +51,22 @@ public class MysqlPersistenceBolt extends BaseRichBolt {
         declarer.declare(_scheme.getOutputFields());
     }
 
-    private void persistence(String log) throws Exception {
+    private void persistence() throws Exception {
         Connection connection = DBConnection.getConnection();
-        String sql = "insert into";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, "");
-        preparedStatement.execute();
-        preparedStatement.close();
+        Statement stmt = connection.createStatement();
+        for(int j = 0; j < _counter; j++) {
+            Tuple tuple = _data.get(j);
+            String sql = "insert into data() values()";
+            stmt.addBatch(sql);
+        }
+        stmt.executeBatch();
+        connection.commit();
+        stmt.close();
         connection.close();
+        for(int i = 0; i < _counter; i++) {
+            _collector.ack(_data.get(i));
+        }
+        _counter = 0;
+        _data.clear();
     }
 }

@@ -12,7 +12,7 @@ import com.rabbitmq.client.QueueingConsumer;
  */
 public class RabbitMQRecv {
 
-    private final static String QUEUE_NAME = "hello";
+    private final static String QUEUE_NAME = "rabbit-alog";
 
     public static void main(String[] args) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
