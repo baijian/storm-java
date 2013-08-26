@@ -50,8 +50,10 @@ public class FilterUriBolt extends BaseRichBolt {
             getUri();
             _t = now;
         }
+
         String log = input.getString(0);
         String[] logs = log.split(" ");
+
         String time_local = logs[3].substring(1, logs[3].length());
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss");
         Date dt = null;
@@ -59,18 +61,22 @@ public class FilterUriBolt extends BaseRichBolt {
             dt = simpleDateFormat.parse(time_local);
         } catch (ParseException e) {
         }
-        SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String t_str = simpleDateFormat1.format(dt);
+        SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String t_str = transFormat.format(dt);
+
         String uri = logs[6];
-        Iterator it = _uris.entrySet().iterator();
-        while(it.hasNext()) {
-            Map.Entry<Integer, String> u = (Map.Entry)it.next();
-            if (Pattern.matches(u.getValue(), uri)) {
-//                System.out.println("=========" +  t_str + "=======");
-                _collector.emit(new Values(u.getKey(), t_str));
-                break;
+
+        if (!_uris.isEmpty()) {
+            Iterator it = _uris.entrySet().iterator();
+            while(it.hasNext()) {
+                Map.Entry<Integer, String> u = (Map.Entry)it.next();
+                if (Pattern.matches(u.getValue(), uri)) {
+                    _collector.emit(new Values(u.getKey(), t_str));
+                    break;
+                }
             }
         }
+
         _collector.ack(input);
     }
 
