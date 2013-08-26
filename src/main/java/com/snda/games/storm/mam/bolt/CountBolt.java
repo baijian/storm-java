@@ -9,7 +9,6 @@ import backtype.storm.tuple.Tuple;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,13 +17,13 @@ import java.util.Map;
 /**
  * Author: bj
  * Time: 2013-08-21 3:03 PM
- * Desc: Save count of each registered url to mysql.
+ * Desc: Save count of each registered url to mysql every miniute.
  */
 public class CountBolt extends BaseRichBolt {
 
     private OutputCollector _collector;
-    private Map<Integer, Integer> _counter;
     private Map<Integer, String> _timer;
+    private Map<Integer, Integer> _counter;
 
     public CountBolt() {
         _counter = new HashMap<Integer, Integer>();
@@ -40,24 +39,37 @@ public class CountBolt extends BaseRichBolt {
     public void execute(Tuple input) {
         int url_id = input.getInteger(0);
         String time_str = input.getString(1);
-//        System.out.println("=======" + url_id +"========"+time_str+"==============");
+
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date dt = null;
         try {
             dt = simpleDateFormat.parse(time_str);
         } catch (Exception e) {
         }
-        SimpleDateFormat simpleDateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        String miniute_begin = simpleDateFormat1.format(dt);
-        String miniute_begin_ = miniute_begin + ":00";
-//        System.out.println(miniute_begin_+ "============------------");
+
+        SimpleDateFormat miniuteFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        String miniute_begin = miniuteFormat.format(dt);
+        String miniute_begin_time = miniute_begin + ":00";
+
         if (!_timer.containsKey(url_id)) {
-            _timer.put(url_id, miniute_begin_);
+            _timer.put(url_id, miniute_begin_time);
         }
-        Date dt_begin = null;
+        if (!_counter.containsKey(url_id)) {
+            _counter.put(url_id, 0);
+        }
+
+        Date dt_miniute_begin = null;
         try {
-            dt_begin = simpleDateFormat1.parse(miniute_begin_);
-        } catch (ParseException e) {
+            dt_miniute_begin = miniuteFormat.parse(_timer.get(url_id));
+        } catch (Exception e) {
+        }
+
+        if (dt.getTime() - dt_miniute_begin.getTime() > 60000) {
+            recordCount(url_id, _timer.get(url_id), _counter.get(url_id));
+            _timer.remove(url_id);
+            _timer.put(url_id, miniute_begin_time);
+            _counter.remove(url_id);
+            _counter.put(url_id, 0);
         }
 
         if (_counter.containsKey(url_id)) {
@@ -65,15 +77,8 @@ public class CountBolt extends BaseRichBolt {
             count++;
             _counter.remove(url_id);
             _counter.put(url_id, count);
-        } else {
-            _counter.put(url_id, 0);
         }
-        if (dt_begin.getTime() - dt.getTime() > 60000) {
-//        if (url_id == 3 && _counter.get(url_id) > 0) {
-            recordCount(url_id, _timer.get(url_id), _counter.get(url_id));
-            _timer.remove(url_id);
-            _counter.remove(url_id);
-        }
+
         _collector.ack(input);
     }
 
