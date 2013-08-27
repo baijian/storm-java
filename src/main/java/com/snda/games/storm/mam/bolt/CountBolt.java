@@ -25,9 +25,21 @@ public class CountBolt extends BaseRichBolt {
     private Map<Integer, String> _timer;
     private Map<Integer, Integer> _counter;
 
-    public CountBolt() {
+    private String _host;
+    private String _port;
+    private String _db;
+    private String _username;
+    private String _password;
+
+    public CountBolt(String host, String port, String db, String username, String password) {
         _counter = new HashMap<Integer, Integer>();
         _timer = new HashMap<Integer, String>();
+
+        _host = host;
+        _port = port;
+        _db = db;
+        _username = username;
+        _password = password;
     }
 
     @Override
@@ -90,7 +102,10 @@ public class CountBolt extends BaseRichBolt {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             Connection connection = null;
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "123456");
+            String connect_str = "jdbc:mysql://" + _host + ":" + _port + "/" +  _db;
+//            connection = DriverManager.getConnection("jdbc:mysql://10.31.22.88:3306/test", "test", "123456");
+            connection = DriverManager.getConnection(connect_str, _username, _password);
+//            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "123456");
             String sql = "insert into alog(url_id, time, count) values(?,?,?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setInt(1, url_id);
@@ -100,6 +115,7 @@ public class CountBolt extends BaseRichBolt {
             preparedStatement.close();
             connection.close();
         } catch (Exception e) {
+//            System.out.println("error" + e.getMessage());
         }
     }
 }

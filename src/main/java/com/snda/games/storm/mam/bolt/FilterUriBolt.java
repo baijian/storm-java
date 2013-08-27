@@ -8,6 +8,10 @@ import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -32,10 +36,23 @@ public class FilterUriBolt extends BaseRichBolt {
     private Map<Integer, String> _uris;
     private Scheme _scheme;
 
-    public FilterUriBolt(Scheme scheme) {
+    private String _host;
+    private String _port;
+    private String _db;
+    private String _username;
+    private String _password;
+
+    public FilterUriBolt(Scheme scheme, String host, String port, String db,
+                         String username, String password) {
         _uris = new HashMap<Integer, String>();
         _t = 0;
         _scheme = scheme;
+
+        _host = host;
+        _port = port;
+        _db = db;
+        _username = username;
+        _password = password;
     }
 
     @Override
@@ -47,6 +64,18 @@ public class FilterUriBolt extends BaseRichBolt {
     public void execute(Tuple input) {
         long now = System.currentTimeMillis();
         if (_t == 0 || (now - _t) > 180000) {
+            try {
+                File file = new File("/tmp/storm.txt");
+                if (!file.exists()) {
+                    file.createNewFile();
+                }
+                FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
+                BufferedWriter bw = new BufferedWriter(fw);
+                bw.write("filter-uri" + "\n");
+                bw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             getUri();
             _t = now;
         }
@@ -89,7 +118,10 @@ public class FilterUriBolt extends BaseRichBolt {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             Connection connection = null;
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "123456");
+            String connect_str = "jdbc:mysql://" + _host + ":" + _port + "/" + _db;
+            connection = DriverManager.getConnection(connect_str, _username, _password);
+//            connection = DriverManager.getConnection("jdbc:mysql://10.31.22.88:3306/test", "test", "123456");
+//            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "123456");
             String sql = "select id,uri from url";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet rs = preparedStatement.executeQuery();
@@ -101,6 +133,11 @@ public class FilterUriBolt extends BaseRichBolt {
             }
             rs.close();
             preparedStatement.close();
+
+            PreparedStatement tt = connection.prepareCall("insert into test(desc) values(?)");
+            tt.setString(1, "tt");
+            tt.execute();
+
             connection.close();
         } catch (Exception e) {
         }
