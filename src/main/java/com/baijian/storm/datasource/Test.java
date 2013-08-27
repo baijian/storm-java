@@ -8,10 +8,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.io.FileInputStream;
+import java.util.Properties;
+
 
 /**
  * Author: bj
- * Time: 2013-08-21 4:00 PM
+ * Time: 2013-08-27 10:28 AM
  * Desc:
  */
 public class Test {
@@ -67,4 +70,14 @@ public class Test {
         }
     }
 
+    public static void mainbak(String[] args) {
+        Properties prop = new Properties();
+        try {
+            prop.load(new FileInputStream("config.properties"));
+
+            System.out.println(prop.getProperty("username"));
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
 }
