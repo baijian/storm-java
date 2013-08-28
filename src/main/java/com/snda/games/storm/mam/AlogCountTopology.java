@@ -24,7 +24,7 @@ public class AlogCountTopology {
 
     public static void main(String[] args) throws Exception {
         String spoutHost = "";
-        Integer spoutPort = 5672;
+        Integer spoutPort = 5672; //default
         String dbHost = "";
         String dbPort = "";
         String dbName = "";
@@ -44,17 +44,11 @@ public class AlogCountTopology {
             System.out.println(e.getMessage());
         }
         TopologyBuilder builder = new TopologyBuilder();
-//        builder.setSpout("Alog", new AlogSpout("10.31.22.81", 5672, false, new StringScheme()), 10);
         builder.setSpout("Alog", new AlogSpout(spoutHost, spoutPort, false, new StringScheme()), 10);
-//        builder.setSpout("Alog", new AlogSpout("localhost", 5672, false, new StringScheme()), 10);
 
         builder.setBolt("FilterAlog", new FilterUriBolt(new AlogScheme(), dbHost, dbPort, dbName
                 , username, password), 10).shuffleGrouping("Alog");
-//        builder.setBolt("FilterAlog", new FilterUriBolt(new AlogScheme(),"10.31.22.88", "3306", "test"
-//                , "test", "123456"), 10).shuffleGrouping("Alog");
 
-//        builder.setBolt("GroupCount", new CountBolt("10.31.22.88", "3306", "test",
-//                "test", "123456"), 20).fieldsGrouping("FilterAlog", new Fields("url_id"));
         builder.setBolt("GroupCount", new CountBolt(dbHost, dbPort, dbName, username, password), 20)
                 .fieldsGrouping("FilterAlog", new Fields("url_id"));
 

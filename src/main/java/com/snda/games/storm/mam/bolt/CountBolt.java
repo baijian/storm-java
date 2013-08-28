@@ -103,9 +103,7 @@ public class CountBolt extends BaseRichBolt {
             Class.forName("com.mysql.jdbc.Driver");
             Connection connection = null;
             String connect_str = "jdbc:mysql://" + _host + ":" + _port + "/" +  _db;
-//            connection = DriverManager.getConnection("jdbc:mysql://10.31.22.88:3306/test", "test", "123456");
             connection = DriverManager.getConnection(connect_str, _username, _password);
-//            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "123456");
             String sql = "insert into alog(url_id, time, count) values(?,?,?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setInt(1, url_id);
@@ -115,7 +113,6 @@ public class CountBolt extends BaseRichBolt {
             preparedStatement.close();
             connection.close();
         } catch (Exception e) {
-//            System.out.println("error" + e.getMessage());
         }
     }
 }
