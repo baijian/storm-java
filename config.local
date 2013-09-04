@@ -1,0 +1,11 @@
+spouthost=10.31.22.81
+spoutprot=5672
+
+dbhost=10.31.22.88
+dbport=3306
+dbname=test
+username=test
+password=123456
+
+logDBHost=10.31.22.88
+logDBPort=3306

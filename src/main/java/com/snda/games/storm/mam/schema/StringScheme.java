@@ -3,7 +3,6 @@ package com.snda.games.storm.mam.schema;
 import backtype.storm.spout.Scheme;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
-import sun.org.mozilla.javascript.ast.ThrowStatement;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;

@@ -5,7 +5,7 @@ import backtype.storm.topology.TopologyBuilder;
 /**
  * Author: bj
  * Time: 2013-08-27 3:49 PM
- * Desc:
+ * Desc: Record log to mysql Topology.
  */
 public class LogRecordTopology {
 
