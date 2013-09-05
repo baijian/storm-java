@@ -5,6 +5,7 @@ import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichSpout;
+import org.apache.log4j.Logger;
 
 import java.util.Map;
 
@@ -14,6 +15,8 @@ import java.util.Map;
  * Desc:
  */
 public class LogSpout extends BaseRichSpout {
+
+    private static final Logger _log = Logger.getLogger(LogSpout.class);
 
     private String _rmqHost;
     private int _rmqPort;
@@ -30,7 +33,7 @@ public class LogSpout extends BaseRichSpout {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        _scheme.getOutputFields();
+        outputFieldsDeclarer.declare(_scheme.getOutputFields());
     }
 
     @Override
