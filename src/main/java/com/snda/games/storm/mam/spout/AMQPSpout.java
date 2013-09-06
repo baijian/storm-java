@@ -72,9 +72,6 @@ public class AMQPSpout extends BaseRichSpout {
     /**
      * Called when task initialized in the worker to Provide environment.
      * Connect to the AMQP broker, declare queue and subscribes to messages.
-     * @param conf
-     * @param context
-     * @param collector
      */
     @Override
     public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
@@ -120,6 +117,7 @@ public class AMQPSpout extends BaseRichSpout {
         }
     }
 
+    @Override
     public void ack(Object msgId) {
         if (msgId instanceof Long) {
             final long deliveryTag = (Long) msgId;
@@ -135,6 +133,7 @@ public class AMQPSpout extends BaseRichSpout {
         }
     }
 
+    @Override
     public void fail(Object msgId) {
         if (msgId instanceof Long) {
             final long deliveryTag = (Long) msgId;
@@ -150,16 +149,33 @@ public class AMQPSpout extends BaseRichSpout {
         }
     }
 
+    @Override
+    public void close() {
+        try {
+            if (_amqpChannel != null) {
+                _amqpChannel.close();
+            }
+        } catch (Exception e) {
+            _log.warn("Error closing AMQP channel: " + e.getMessage());
+        }
+        try {
+            if (_amqpConnection != null) {
+                _amqpConnection.close();
+            }
+        } catch (Exception e) {
+            _log.warn("Error closing AMQP connection: " + e.getMessage());
+        }
+    }
+
     private void connectAMQP() throws Exception {
         final ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost(_amqpHost);
-        connectionFactory.setPort(_amqpPort);
-        connectionFactory.setUsername(_amqpUsername);
-        connectionFactory.setPassword(_amqpPassword);
-        connectionFactory.setVirtualHost(_amqpVhost);
+        String connectUri = "amqp://" + _amqpUsername + ":" + _amqpPassword + "@"
+                            + _amqpHost + ":" + _amqpPort + "/" + _amqpVhost;
+        connectionFactory.setUri(connectUri);
 
         _amqpConnection = connectionFactory.newConnection();
         _amqpChannel = _amqpConnection.createChannel();
+
         _log.info("Setting basic.qos of channel prefetch-count to: " + _prefetchCount);
         _amqpChannel.basicQos(_prefetchCount);
 

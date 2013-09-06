@@ -15,11 +15,6 @@ import com.snda.games.storm.mam.spout.AlogSpout;
 import java.io.FileInputStream;
 import java.util.Properties;
 
-/**
- * Author: bj
- * Time: 2013-08-21 3:05 PM
- * Desc: Count requests of different url based on alog of nginx.
- */
 public class AlogCountTopology {
 
     public static void main(String[] args) throws Exception {

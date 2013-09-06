@@ -1,4 +1,4 @@
-package com.snda.games.storm.mam.bolt;
+package com.snda.games.storm.mam.bolt.logrecord;
 
 import backtype.storm.spout.Scheme;
 import backtype.storm.task.OutputCollector;

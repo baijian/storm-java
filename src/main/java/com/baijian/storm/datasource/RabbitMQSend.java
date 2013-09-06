@@ -5,11 +5,6 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
 
-/**
- * Author: bj
- * Time: 2013-08-19 9:57 AM
- * Desc:
- */
 public class RabbitMQSend {
 
     private final static String QUEUE_NAME = "hello";
@@ -17,13 +12,19 @@ public class RabbitMQSend {
     public static void main(String[] args) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
+
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
+
         channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+
         String message = "Hello World!";
+
         channel.basicPublish("", QUEUE_NAME, null, message.getBytes());
         System.out.println("[X] Send '" + message + "'");
+
         channel.close();
         connection.close();
     }
+
 }
