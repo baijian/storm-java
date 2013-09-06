@@ -1,6 +1,5 @@
 package com.snda.games.storm.mam.spout;
 
-
 import backtype.storm.spout.Scheme;
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -20,11 +19,6 @@ import org.apache.log4j.Logger;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Author: bj
- * Time: 2013-09-04 23:49
- * Desc: Use RabbitMQ to be the spout of storm topology.
- */
 public class AMQPSpout extends BaseRichSpout {
 
     private static final Logger _log = Logger.getLogger(AMQPSpout.class);

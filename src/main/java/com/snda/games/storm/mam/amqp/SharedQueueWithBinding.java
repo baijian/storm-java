@@ -3,11 +3,6 @@ package com.snda.games.storm.mam.amqp;
 import com.rabbitmq.client.AMQP.Queue;
 import com.rabbitmq.client.Channel;
 
-/**
- * Author: bj
- * Time: 2013-09-05 5:15 PM
- * Desc:
- */
 public class SharedQueueWithBinding implements IQueueDeclaration {
 
     private final String _queueName;

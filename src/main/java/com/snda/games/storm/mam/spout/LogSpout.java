@@ -9,11 +9,6 @@ import org.apache.log4j.Logger;
 
 import java.util.Map;
 
-/**
- * Author: bj
- * Time: 2013-09-04 18:01
- * Desc:
- */
 public class LogSpout extends BaseRichSpout {
 
     private static final Logger _log = Logger.getLogger(LogSpout.class);
