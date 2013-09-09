@@ -24,6 +24,9 @@ public class LogRecordTopology {
         String username = "";
         String password = "";
         String vhost = "";
+        String queueName = "";
+        String exchange = "";
+        String routinKey = "";
 
         String dbHost = "";
         String dbPort = "";
@@ -32,12 +35,15 @@ public class LogRecordTopology {
         String dbName = "";
 
         Properties properties = new Properties();
-        properties.load(new FileInputStream("logrecord.local.properties"));
+        properties.load(new FileInputStream("src/main/java/resources/recordlog.local.properties"));
         host = properties.getProperty("host");
         port = Integer.parseInt(properties.getProperty("port"));
         username = properties.getProperty("username");
         password = properties.getProperty("password");
         vhost = properties.getProperty("vhost");
+        queueName = properties.getProperty("queueName");
+        exchange = properties.getProperty("exchange");
+        routinKey = properties.getProperty("routinKey");
 
         dbHost = properties.getProperty("dbhost");
         dbPort = properties.getProperty("dbport");
@@ -46,7 +52,7 @@ public class LogRecordTopology {
         dbName = properties.getProperty("dbname");
 
         StringScheme stringScheme = new StringScheme();
-        SharedQueueWithBinding sharedQ = new SharedQueueWithBinding("", "", "");
+        SharedQueueWithBinding sharedQ = new SharedQueueWithBinding(queueName, exchange, routinKey);
 
         TopologyBuilder builder = new TopologyBuilder();
         AMQPSpout amqpSpout = new AMQPSpout(stringScheme, host, port, username,

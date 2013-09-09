@@ -4,7 +4,6 @@ import backtype.storm.spout.KestrelThriftClient;
 import org.apache.thrift7.TException;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.Random;
 
 /**
