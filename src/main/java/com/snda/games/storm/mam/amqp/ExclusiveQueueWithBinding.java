@@ -3,11 +3,6 @@ package com.snda.games.storm.mam.amqp;
 import com.rabbitmq.client.AMQP.Queue;
 import com.rabbitmq.client.Channel;
 
-/**
- * Author: bj
- * Time: 2013-09-05 5:27 PM
- * Desc:
- */
 public class ExclusiveQueueWithBinding implements IQueueDeclaration {
 
     private final String _exchange;
@@ -26,8 +21,10 @@ public class ExclusiveQueueWithBinding implements IQueueDeclaration {
         return queue;
     }
 
+    /*
     @Override
     public boolean isParallelConsumable() {
         return false;
     }
+    */
 }

@@ -18,20 +18,24 @@ public class SharedQueueWithBinding implements IQueueDeclaration {
 
     @Override
     public Queue.DeclareOk declare(Channel channel) throws Exception {
-        channel.exchangeDeclarePassive(_exchange);
         final Queue.DeclareOk queue = channel.queueDeclare(
             _queueName,
-            true, /*durable*/
+            false, /*non-durable*/
             false, /*non-exclusive*/
             false, /*non-auto-delete*/
             null
         );
-        channel.queueBind(queue.getQueue(), _exchange, _routingKey);
+        if (!_exchange.isEmpty()) {
+            channel.exchangeDeclarePassive(_exchange);
+            channel.queueBind(queue.getQueue(), _exchange, _routingKey);
+        }
         return queue;
     }
 
+    /*
     @Override
     public boolean isParallelConsumable() {
         return true;
     }
+    */
 }

@@ -25,11 +25,10 @@ public class AMQPSpout extends BaseRichSpout {
 
     private Scheme _scheme;
     private SpoutOutputCollector _collector;
-
     private static String ERROR_STREAM_NAME = "error-stream";
 
     public static final String CONFIG_PREFETCH_COUNT = "amqp.prefetch.count";
-    private static final long DEFAULT_PREFETCH_COUNT = 100;
+    private static final long DEFAULT_PREFETCH_COUNT = 500;
     private int _prefetchCount;
 
     private static final long WAIT_FOR_NEXT_MESSAGE = 1L;
@@ -43,6 +42,7 @@ public class AMQPSpout extends BaseRichSpout {
 
     private final IQueueDeclaration _queueDeclaration;
     private final boolean _requeueOnFail;
+    private final boolean _autoAck;
 
     private transient Connection _amqpConnection;
     private transient Channel _amqpChannel;
@@ -50,17 +50,20 @@ public class AMQPSpout extends BaseRichSpout {
     private transient String _amqpConsumerTag;
 
     public AMQPSpout(Scheme scheme, String host, int port,String username,
-                     String password, String vhost, IQueueDeclaration queueDeclaration, boolean requeueOnFail) {
+                     String password, String vhost, IQueueDeclaration queueDeclaration,
+                     boolean requeueOnFail, boolean autoAck)
+    {
         _scheme = scheme;
-
-        _queueDeclaration = queueDeclaration;
-        _requeueOnFail = requeueOnFail;
 
         _amqpHost = host;
         _amqpPort = port;
         _amqpUsername = username;
         _amqpPassword = password;
         _amqpVhost = vhost;
+
+        _queueDeclaration = queueDeclaration;
+        _requeueOnFail = requeueOnFail;
+        _autoAck = autoAck;
     }
 
     @Override
@@ -119,7 +122,7 @@ public class AMQPSpout extends BaseRichSpout {
 
     @Override
     public void ack(Object msgId) {
-        if (msgId instanceof Long) {
+        if (_autoAck == false && msgId instanceof Long) {
             final long deliveryTag = (Long) msgId;
             if (_amqpChannel != null) {
                 try {
@@ -135,7 +138,7 @@ public class AMQPSpout extends BaseRichSpout {
 
     @Override
     public void fail(Object msgId) {
-        if (msgId instanceof Long) {
+        if (_autoAck == false && msgId instanceof Long) {
             final long deliveryTag = (Long) msgId;
             if (_amqpChannel != null) {
                 try {
@@ -153,6 +156,9 @@ public class AMQPSpout extends BaseRichSpout {
     public void close() {
         try {
             if (_amqpChannel != null) {
+                if (_amqpConsumerTag != null) {
+                    _amqpChannel.basicCancel(_amqpConsumerTag);
+                }
                 _amqpChannel.close();
             }
         } catch (Exception e) {
@@ -184,7 +190,7 @@ public class AMQPSpout extends BaseRichSpout {
         _log.info("Consuming queue " + queueName);
 
         _amqpConsumer = new QueueingConsumer(_amqpChannel);
-        _amqpConsumerTag = _amqpChannel.basicConsume(queueName, false, _amqpConsumer);
+        _amqpConsumerTag = _amqpChannel.basicConsume(queueName, _autoAck, _amqpConsumer);
     }
 
     private void reconnect() {

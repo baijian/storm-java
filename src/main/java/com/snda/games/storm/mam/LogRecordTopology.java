@@ -49,7 +49,8 @@ public class LogRecordTopology {
         SharedQueueWithBinding sharedQ = new SharedQueueWithBinding("", "", "");
 
         TopologyBuilder builder = new TopologyBuilder();
-        AMQPSpout amqpSpout = new AMQPSpout(stringScheme, host, port, username, password, vhost, sharedQ, true);
+        AMQPSpout amqpSpout = new AMQPSpout(stringScheme, host, port, username,
+                password, vhost, sharedQ, true, false);
         FilterLogBolt filterLogBolt = new FilterLogBolt(new TableLogScheme());
         SaveLogBolt saveLogBolt = new SaveLogBolt(dbHost, dbPort, dbName, dbUsername, dbPassword, 10);
         builder.setSpout("LogRecord", amqpSpout, 10);
@@ -59,7 +60,10 @@ public class LogRecordTopology {
         Config config = new Config();
 
         if (args != null && args.length > 0) {
-            config.setNumWorkers(10);
+            config.setNumWorkers(20);
+            config.setMaxSpoutPending(1000);
+            config.setNumAckers(5);
+            config.setMessageTimeoutSecs(30);//default
             StormSubmitter.submitTopology(args[0], config, builder.createTopology());
         } else {
             LocalCluster localCluster = new LocalCluster();

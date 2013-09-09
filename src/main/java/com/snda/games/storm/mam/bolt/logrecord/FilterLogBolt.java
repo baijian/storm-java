@@ -12,12 +12,6 @@ import org.json.simple.parser.JSONParser;
 
 import java.util.Map;
 
-/**
- * Author: bj
- * Time: 9/4/13 12:08 PM
- * Desc: Get table name in the json and emit the
- *      tableName and log json string.
- */
 public class FilterLogBolt extends BaseRichBolt {
 
     private OutputCollector _collector;

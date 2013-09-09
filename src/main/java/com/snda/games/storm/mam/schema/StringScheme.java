@@ -7,11 +7,6 @@ import backtype.storm.tuple.Values;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-/**
- * Author: bj
- * Time: 2013-08-21 2:29 PM
- * Desc: Storm string scheme.
- */
 public class StringScheme implements Scheme {
     @Override
     public List<Object> deserialize(byte[] ser) {

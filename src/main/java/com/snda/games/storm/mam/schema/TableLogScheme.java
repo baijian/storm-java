@@ -5,11 +5,6 @@ import backtype.storm.tuple.Fields;
 
 import java.util.List;
 
-/**
- * Author: bj
- * Time: 9/4/13 12:02 PM
- * Desc: Different log map to tables scheme.
- */
 public class TableLogScheme implements Scheme {
 
     @Override
