@@ -7,3 +7,4 @@ config.properties
 
 release.config
 
+src/main/java/resources/*-release.properties
