@@ -30,6 +30,7 @@ public class SaveLogBolt extends BaseRichBolt {
     private Integer _count;
 
     private long _t;
+    private long _tt;
     private Map<String, String> _tables;
     private Map<String, Integer> _counter;
     private Map<String, List<String>> _values;
@@ -44,6 +45,7 @@ public class SaveLogBolt extends BaseRichBolt {
         _count = count;
 
         _t = 0;
+        _tt = 0;
         _tables = new HashMap<String, String>();
         _counter = new HashMap<String, Integer>();
         _values = new HashMap<String, List<String>>();
@@ -62,6 +64,9 @@ public class SaveLogBolt extends BaseRichBolt {
             syncTableInfo();
             _t = now;
         }
+        if (_tt == 0) {
+            _tt = now;
+        }
         String tableName = input.getString(0);
         String logs = input.getString(1);
         if (_tables.containsKey(tableName)) {
@@ -75,11 +80,13 @@ public class SaveLogBolt extends BaseRichBolt {
                 _counter.put(tableName, 1);
                 updateLogList(tableName, logs);
             }
-            if (_counter.get(tableName) >= _count) {
+            if (_counter.get(tableName) >= _count
+                    || (now - _tt) > 180000 ) {
                 writeLog(tableName);
                 _counter.remove(tableName);
                 _counter.put(tableName, 0);
                 _values.remove(tableName);
+                _tt = now;
             }
         }
         _collector.ack(input);
