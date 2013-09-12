@@ -18,11 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Author: bj
- * Time: 2013-08-27 3:52 PM
- * Desc: Save some log to mysql every second.
- */
 public class SaveLogBolt extends BaseRichBolt {
 
     private OutputCollector _collector;
@@ -127,6 +122,7 @@ public class SaveLogBolt extends BaseRichBolt {
             preparedStatement.close();
             connection.close();
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -138,7 +134,7 @@ public class SaveLogBolt extends BaseRichBolt {
             field += fields[i] + ",";
         }
         field = field.substring(0, field.length() - 1);
-        String sql = "insert into " + tableName + "(" + field + ")";
+        String sql = "insert into " + tableName + "(" + field + ") values";
         List<String> listJson = _values.get(tableName);
         JSONParser jsonParser = new JSONParser();
         for (String jsonStr : listJson) {
@@ -147,14 +143,15 @@ public class SaveLogBolt extends BaseRichBolt {
             try {
                 jo = (JSONObject) jsonParser.parse(jsonStr);
                 for (int j = 0; j < fields.length; j++) {
-                    fieldsVal += (String)jo.get(fields[j]) + ",";
+                    fieldsVal += "'" + (String)jo.get(fields[j]) + "',";
                 }
             } catch (Exception e) {
             }
             fieldsVal = fieldsVal.substring(0, fieldsVal.length() - 1);
-            fieldsVal = " values(" + fieldsVal + ") ";
+            fieldsVal = "(" + fieldsVal + "),";
             sql += fieldsVal;
         }
+        sql = sql.substring(0, sql.length() - 1);
         try {
             Class.forName("com.mysql.jdbc.Driver");
             Connection connection = null;

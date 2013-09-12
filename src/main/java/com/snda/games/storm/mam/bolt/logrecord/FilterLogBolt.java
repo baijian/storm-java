@@ -49,6 +49,6 @@ public class FilterLogBolt extends BaseRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        _scheme.getOutputFields();
+        outputFieldsDeclarer.declare(_scheme.getOutputFields());
     }
 }

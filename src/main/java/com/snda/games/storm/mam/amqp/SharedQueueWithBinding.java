@@ -3,6 +3,8 @@ package com.snda.games.storm.mam.amqp;
 import com.rabbitmq.client.AMQP.Queue;
 import com.rabbitmq.client.Channel;
 
+import java.io.IOException;
+
 public class SharedQueueWithBinding implements IQueueDeclaration {
 
     private final String _queueName;
@@ -18,7 +20,7 @@ public class SharedQueueWithBinding implements IQueueDeclaration {
 
     @Override
     public Queue.DeclareOk declare(Channel channel) throws Exception {
-        final Queue.DeclareOk queue = channel.queueDeclare(
+        Queue.DeclareOk queue = channel.queueDeclare(
             _queueName,
             false, /*non-durable*/
             false, /*non-exclusive*/

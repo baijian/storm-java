@@ -20,11 +20,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-/**
- * Author: bj
- * Time: 2013-08-21 3:02 PM
- * Desc: Filter url which are registered in mysql and synchronous urls every 3 miniute.
- */
 public class FilterUriBolt extends BaseRichBolt {
 
     private OutputCollector _collector;

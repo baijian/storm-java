@@ -7,7 +7,7 @@ import com.rabbitmq.client.QueueingConsumer;
 
 public class RabbitMQRecv {
 
-    private final static String QUEUE_NAME = "rabbit-alog";
+    private final static String QUEUE_NAME = "recordlog";
 
     public static void main(String[] args) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
@@ -29,13 +29,15 @@ public class RabbitMQRecv {
         int  prefetchCount = 500;
         channel.basicQos(prefetchCount);
 
-        boolean durable = true;
+        boolean durable = false;
         /*
         In Sender we have define the queue to be durable, so Receiver
         must also define as durable.
         So queue Declare code should be same with Sender.
          */
         channel.queueDeclare(QUEUE_NAME, durable, false, false, null);
+        channel.exchangeDeclarePassive("recordlogs");
+        channel.queueBind(QUEUE_NAME, "recordlogs","record");
         System.out.println("[*] Waiting for messages. To exit press CTRL+C");
 
         /*

@@ -8,6 +8,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 public class StringScheme implements Scheme {
+
     @Override
     public List<Object> deserialize(byte[] ser) {
         try {

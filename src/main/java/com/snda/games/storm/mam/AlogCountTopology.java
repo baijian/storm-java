@@ -39,6 +39,7 @@ public class AlogCountTopology {
             System.out.println(e.getMessage());
         }
         TopologyBuilder builder = new TopologyBuilder();
+
         builder.setSpout("Alog", new AlogSpout(spoutHost, spoutPort, false, new StringScheme()), 10);
 
         builder.setBolt("FilterAlog", new FilterUriBolt(new AlogScheme(), dbHost, dbPort, dbName
@@ -48,7 +49,7 @@ public class AlogCountTopology {
                 .fieldsGrouping("FilterAlog", new Fields("url_id"));
 
         Config config = new Config();
-//        config.setDebug(true);
+        config.setDebug(true);
 
         if (args != null && args.length > 0) {
             config.setNumWorkers(10);

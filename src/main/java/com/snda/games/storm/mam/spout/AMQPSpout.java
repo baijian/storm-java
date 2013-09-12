@@ -93,6 +93,7 @@ public class AMQPSpout extends BaseRichSpout {
             connectAMQP();
         } catch (Exception e) {
             _log.error("Connect to AMQP failed: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -185,8 +186,8 @@ public class AMQPSpout extends BaseRichSpout {
         _log.info("Setting basic.qos of channel prefetch-count to: " + _prefetchCount);
         _amqpChannel.basicQos(_prefetchCount);
 
-        final Queue.DeclareOk queue = _queueDeclaration.declare(_amqpChannel);
-        final String queueName = queue.getQueue();
+        Queue.DeclareOk queue = _queueDeclaration.declare(_amqpChannel);
+        String queueName = queue.getQueue();
         _log.info("Consuming queue " + queueName);
 
         _amqpConsumer = new QueueingConsumer(_amqpChannel);
